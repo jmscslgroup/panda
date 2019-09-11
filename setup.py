@@ -35,7 +35,7 @@ def find_version(*file_paths):
 
 setup(
   name='pandacan',
-  version=find_version("python", "__init__.py"),
+  version=find_version("panda", "__init__.py"),
   url='https://github.com/commaai/panda',
   author='comma.ai',
   author_email='',
