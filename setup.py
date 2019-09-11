@@ -42,7 +42,7 @@ setup(
   packages=[
     'panda',
     ],
-  package_dir = {'panda': 'python'},
+  package_dir = {'panda': 'panda'},
   platforms='any',
   license='MIT',
   install_requires=[
