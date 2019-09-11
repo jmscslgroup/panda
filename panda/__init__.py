@@ -10,11 +10,11 @@ import time
 import traceback
 import subprocess
 from .dfu import PandaDFU
-from esptool import ESPROM, CesantaFlasher
-from flash_release import flash_release
-from update import ensure_st_up_to_date
-from serial import PandaSerial
-from isotp import isotp_send, isotp_recv
+from .esptool import ESPROM, CesantaFlasher
+from .flash_release import flash_release
+from .update import ensure_st_up_to_date
+from .serial import PandaSerial
+from .isotp import isotp_send, isotp_recv
 
 __version__ = '0.0.9'
 
