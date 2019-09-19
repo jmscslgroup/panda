@@ -13,7 +13,7 @@
 import codecs
 import os
 import re
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -39,10 +39,7 @@ setup(
   url='https://github.com/commaai/panda',
   author='comma.ai',
   author_email='',
-  packages=[
-    'panda',
-    ],
-  package_dir = {'panda': 'panda'},
+  packages=find_packages(),
   platforms='any',
   license='MIT',
   install_requires=[
