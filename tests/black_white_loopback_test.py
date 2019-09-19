@@ -105,7 +105,7 @@ def test_buses(black_panda, other_panda, direction, test_array, sleep_duration):
       if direction:
         other_panda.can_clear(recv_bus)
       else:
-	black_panda.can_clear(recv_bus)
+        black_panda.can_clear(recv_bus)
     
     black_panda.can_recv()
     other_panda.can_recv()

@@ -105,6 +105,7 @@ def test_buses(send_panda, recv_panda, test_array, sleep_duration):
     if len(cans_loop) == 0:
       print("  No loop")
     
+
     # test loop buses
     recv_buses.sort()
     loop_buses.sort()
