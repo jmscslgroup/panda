@@ -77,7 +77,7 @@ class PandaWifiStreaming(object):
 
 # stupid tunneling of USB over wifi and SPI
 class WifiHandle(object):
-  def __init__(self, ip="192.168.0.10", port=1337):
+  def __init__(self, ip="192.168.0.11", port=1337):
     self.sock = socket.create_connection((ip, port))
 
   def __recv(self):
@@ -179,6 +179,7 @@ class Panda(object):
                 self.bootstub = device.getProductID() == 0xddee
                 self.legacy = (device.getbcdDevice() != 0x2300)
                 self._handle = device.open()
+                self._handle.setAutoDetachKernelDriver(True)
                 if claim:
                   self._handle.claimInterface(0)
                   #self._handle.setInterfaceAltSetting(0, 0) #Issue in USB stack
@@ -190,7 +191,7 @@ class Panda(object):
           break
         context = usb1.USBContext() #New context needed so new devices show up
     assert(self._handle != None)
-    print("connected")
+    print("connected !!!")
 
   def reset(self, enter_bootstub=False, enter_bootloader=False):
     # reset
