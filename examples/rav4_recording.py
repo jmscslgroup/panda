@@ -33,8 +33,6 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 import pandas as pd # Note that this is not commai Panda, but Database Pandas
 import cantools 
 import matplotlib.animation as animation
@@ -59,7 +57,6 @@ panda = Panda()
 # In[ ]:
 
 
-
 # Create a Unique File Name
 unique_filename = str(uuid.uuid4())
 currTime = str(time.time())
@@ -71,14 +68,24 @@ print('Writing: '+fileName)
 csvwriter_PANDA = csv.writer(rf_PANDA)
 csvwriter_PANDA.writerow(['Time','Bus', 'MessageID', 'Message', 'MessageLength'])
 
+counter = 0
 while True:
+    #counter = counter + 1
     can_recv = panda.can_recv() # collects packages, 256 at a time
     #print(can_recv)
     currTime = time.time() # Records time of collection
-    for address, _, dat, src  in can_recv:
-    	# Be careful changing this, can be picky:
-    	csvwriter_PANDA.writerow(([str(currTime), str(src), str((address)), str(binascii.hexlify(dat).decode('utf-8')), len(dat)]))
-    	#print('Addres: '+str((address)), end='\r')
+    for messageID, _, dat, bus  in can_recv:
+        # Be careful changing this, can be picky:
+        #if address == 467:
+        #    print(can_recv)
+        #    print('Bus = ',  bus)
+        #    print('\n')
+        #    print('Message ID = ', messageID)
+        #    print('\n')
+        #    print('Message = ', dat)
+        #    print('\n')
+        csvwriter_PANDA.writerow(([str(currTime), str(bus), str((messageIDs)), str(binascii.hexlify(dat).decode('utf-8')), len(dat)]))
+        #print('Addres: '+str((address)), end='\r')
 
 
 # ## Load the decode py script _DBC_READ_Tools_
@@ -94,8 +101,8 @@ import DBC_Read_Tools as DBC
 # In[ ]:
 
 
-can_data = pd.read_csv('CAN_Data_Giraffe.csv')# read in the data
-#can_data = pd.read_csv(fileName)
+#can_data = pd.read_csv('CAN_Data_Giraffe.csv')# read in the data
+can_data = pd.read_csv(fileName)
 db_file = cantools.db.load_file('newToyotacode.dbc')# Specify your dbc file
 
 
@@ -104,14 +111,11 @@ db_file = cantools.db.load_file('newToyotacode.dbc')# Specify your dbc file
 # In[ ]:
 
 
-
 # %% Plot the speed of the vehicle:
 DBC.plotDBC('SPEED',1,can_data,db_file)
 
 
 # In[ ]:
-
-
 
 
 DBC.plotDBC('GAS_PEDAL',0,can_data,db_file)
@@ -211,4 +215,35 @@ DBC.plotDBC('STEERING_LKA',4,can_data,db_file)
 DBC.plotDBC('TRACK_A_0',1,can_data,db_file)
 DBC.plotDBC('TRACK_A_1',1,can_data,db_file)
 DBC.plotDBC('TRACK_A_2',1,can_data,db_file)
+
+
+DBC.plotDBC('PCM_CRUISE_SM',0,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_SM',1,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_SM',2,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_SM',3,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_2',0,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_2',1,can_data,db_fi
+
+
+
+DBC.plotDBC('PCM_CRUISE_2',2,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE_2',3,can_data,db_file)
+
+DBC.plotDBC('PCM_CRUISE',0,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE',1,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE',2,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE',3,can_data,db_file)
+DBC.plotDBC('PCM_CRUISE',4,can_data,db_file)
+
+
+# In[ ]:
+
+
+panda.close()
+
+
+# In[ ]:
+
+
+
 
