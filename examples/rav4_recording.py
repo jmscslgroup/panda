@@ -3,17 +3,25 @@
 
 # # Script to record data from RAV4 Using Panda/Giraffe
 
-# In[2]:
+# ## Install Panda
+
+# In[ ]:
 
 
-get_ipython().system('pip install cantools tqdm')
-from panda import Panda #Import Comma Ai Panda
-__vehicleName__ = 'Rav4'
+get_ipython().system('cd ..; python setup.py install')
+
+
+# ## Install other necessary packages
+
+# In[ ]:
+
+
+get_ipython().system('pip install cantools tqdm libusb1 pyserial bitstring')
 
 
 # ## Import  Packages
 
-# In[7]:
+# In[ ]:
 
 
 import binascii
@@ -24,7 +32,7 @@ import serial
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams["figure.figsize"] = (10,10)
+
 
 
 import pandas as pd # Note that this is not commai Panda, but Database Pandas
@@ -39,6 +47,8 @@ import uuid
 # In[ ]:
 
 
+from panda import Panda #Import Comma AI Panda
+__vehicleName__ = 'Rav4'
 panda = Panda()
 
 
@@ -73,7 +83,7 @@ while True:
 
 # ## Load the decode py script _DBC_READ_Tools_
 
-# In[5]:
+# In[ ]:
 
 
 import DBC_Read_Tools as DBC
@@ -84,19 +94,25 @@ import DBC_Read_Tools as DBC
 # In[ ]:
 
 
-#can_data = pd.read_csv('CAN_Data_Giraffe_2.csv')# read in the data
-can_data = pd.read_csv(fileName)
+can_data = pd.read_csv('CAN_Data_Giraffe.csv')# read in the data
+#can_data = pd.read_csv(fileName)
 db_file = cantools.db.load_file('newToyotacode.dbc')# Specify your dbc file
 
 
 # ### Decode and Plot
 
-# In[51]:
+# In[ ]:
 
 
 
 # %% Plot the speed of the vehicle:
 DBC.plotDBC('SPEED',1,can_data,db_file)
+
+
+# In[ ]:
+
+
+
 
 DBC.plotDBC('GAS_PEDAL',0,can_data,db_file)
 
@@ -142,36 +158,46 @@ Distance_Data = DBC.cleanDistanceData(Distance_Data)
 
 print('Data Cleaned')
 # %% Plot Cleaned Distance:
-pt.figure()
-pt.plot(Distance_Data[:,0],Distance_Data[:,1],'.')
-pt.title('Longitudinal Distance Measurements - Cleaned')
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.set_axisbelow(True)
+ax.minorticks_on()
+ax.tick_params(axis="x", labelsize=18)
+ax.tick_params(axis="y", labelsize=18)
+ax.grid(which='major', linestyle='-', linewidth='0.5', color='blue')
+ax.grid(which='minor', linestyle='--', linewidth='0.25', color='gray')
+ax.set_xlabel('Time', fontsize=18)
+ax.set_ylabel('Message', fontsize=18)
+ax.set_title('Longitudinal Distance Measurements - Cleaned',fontsize= 20)
+
+plt.plot(Distance_Data[:,0],Distance_Data[:,1],'.')
 
 
-# In[64]:
+# In[ ]:
 
 
 DBC.plotDBC('STEERING_LKA',0,can_data,db_file)
 
 
-# In[65]:
+# In[ ]:
 
 
 DBC.plotDBC('STEERING_LKA',1,can_data,db_file)
 
 
-# In[66]:
+# In[ ]:
 
 
 DBC.plotDBC('STEERING_LKA',2,can_data,db_file)
 
 
-# In[67]:
+# In[ ]:
 
 
 DBC.plotDBC('STEERING_LKA',3,can_data,db_file)
 
 
-# In[68]:
+# In[ ]:
 
 
 DBC.plotDBC('STEERING_LKA',4,can_data,db_file)
@@ -181,10 +207,8 @@ DBC.plotDBC('STEERING_LKA',4,can_data,db_file)
 
 
 
-
-
-# In[ ]:
-
-
-
+# %% Plot the estimated longitudonal radar measurements for track 0 and its relative speed:
+DBC.plotDBC('TRACK_A_0',1,can_data,db_file)
+DBC.plotDBC('TRACK_A_1',1,can_data,db_file)
+DBC.plotDBC('TRACK_A_2',1,can_data,db_file)
 
