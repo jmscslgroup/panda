@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as pt
 import csv
 import pandas as pd
-import cantools 
+import cantools
 import matplotlib.animation as animation
 from matplotlib import style
 
@@ -30,26 +30,26 @@ def cleanDistanceData(numpyData):
     return new_Dist_Data
 
 
-def plotMessages(messages, df, db):   
+def plotMessages(messages, df, db):
     y = len(messages)
     for j in range (0,y):
         x = len(db.get_message_by_frame_id(messages[j]).signals)
         pt.figure(j)
         pt.suptitle(db.get_message_by_frame_id(messages[j]).name)
-        for i in range (0,x): 
+        for i in range (0,x):
             m = convertData(messages[j],i,df,db)
-            
+
             pt.subplot(3,3,i+1)
             name = db.get_message_by_frame_id(messages[j]).signals[i].name
             pt.tight_layout()
             pt.plot(m['Time'], m['Message'], 'k')
             pt.title(name)
-            
-        
+
+
 
 def getMessageName(frameOrName,db):
     """Retrieve string name of a message from the db.
-    
+
     frameOrName parameter should be ID integer.
     """
     myName = db.get_message_by_frame_id(frameOrName).name
@@ -57,9 +57,9 @@ def getMessageName(frameOrName,db):
 
 def getSignalName(frameOrName, signalNum,db):
     """Retrieve string name of signal.
-    
+
     frameOrName is the ID str or int for the message. signalNum is the int representing that this signal
-    is the nth signal in the message. If the signal is not in the DBC, it will return a name 
+    is the nth signal in the message. If the signal is not in the DBC, it will return a name
     "not in the DBC", and print out a warning.
     """
     if type(frameOrName) is int:
@@ -70,7 +70,7 @@ def getSignalName(frameOrName, signalNum,db):
             name = "not in DBC"
     elif type(frameOrName) is str:
         try:
-            name = db.get_message_by_name(frameOrName).signals[signalNum].name           
+            name = db.get_message_by_name(frameOrName).signals[signalNum].name
         except:
             print("warning: str addr not in DBC")
             name = "not in DBC"
@@ -79,14 +79,14 @@ def getSignalName(frameOrName, signalNum,db):
 
 def getSignalID(frameOrName, signalName, db):
     """Get the int ID of a signal by giving the message name and signal name.
-    
+
     frameOrName is the ID str or int for the message. signalName is the name of the signal that you want the ID for.
     """
-    
+
     if type(frameOrName) is int:
         try:
             num = db.get_message_by_frame_id(frameOrName).signals
-            
+
             for  i in range(len(num)) :
                 if num[i].name == signalName:
                     myNum = i
@@ -97,8 +97,8 @@ def getSignalID(frameOrName, signalName, db):
             myNum = "not in DBC"
     elif type(frameOrName) is str:
         try:
-            num = db.get_message_by_name(frameOrName).signals 
-            
+            num = db.get_message_by_name(frameOrName).signals
+
             for  i in range(len(num)) :
                 if num[i].name == signalName:
                     myNum = i
@@ -107,18 +107,18 @@ def getSignalID(frameOrName, signalName, db):
         except:
             print("warning: str addr not in DBC")
             myNum = "not in DBC"
-    
+
     return myNum
 
 def findMessageInfo(messageNameorNum,db):
     """This function does text parsing on a dbc file to select the relevant pieces
-    of information. 
-    
+    of information.
+
     It looks first for the kind of message that is desired, which
     is specified by messageNameorNum. It then looks through db, which is a Database object from cantools
     that corresponds to the lines of the dbc file. It returns the message, which
     includes the message attributes, its signals and their attributes as well."""
-    
+
 #Breakdown of a signal: name, start, length, byte_order, is_signed, is_float, scale, offset, minimum, maximum, unit, is_Multiplexer, idk=None ,idk=None , comment
     if type(messageNameorNum) is str:
         try:
@@ -146,7 +146,7 @@ def ExtractChffrData(messageNameOrNum,df,db):
     Data = a[['Time','Message']]
     if Data.empty:
         print("warning: dataframe empty. message not in dataframe.")
-    
+
     return Data
 
 def Reformat_Can_Data(can_data_file_Path,newName):
@@ -179,17 +179,17 @@ def CleanData(df):
 
 def convertData(messageNameID,attribute, df, db):
     """Finds the data for a message and returns a dataframe with time and integer hex for the signal you want.
-    
+
     messageNameID is the string or integer that represents your message.
     attribute is the string or integer that represents your signal."""
-    
+
     message = findMessageInfo(messageNameID,db) #locate and store the message for use
     #print(message)
     messageData = ExtractChffrData(messageNameID,df,db) #extract the time and hex data for the relevant message
-    
+
     if type(attribute) is str:
         attribute = getSignalID(messageNameID, attribute, db) #get the signal int ID if a string was used, for decoding the message below
-    
+
     #for printing out characteristics of the signal being looked at. not actually using right now because I find it superfluous.
     #may be useful in the future
     if message != "not in DBC" and message.signals != []:
@@ -201,16 +201,16 @@ def convertData(messageNameID,attribute, df, db):
             start = message.signals[attribute].start
             length = message.signals[attribute].length
             scale = message.signals[attribute].scale
-    
+
         #print('StartPos is: '+str(start))
         #print('Length is: '+str(length))
-        #print('Scale is: '+str(scale)) 
-   
-    decimalData = messageData.copy() #make a copy of messagedata, output hex to dec 
-   
+        #print('Scale is: '+str(scale))
+
+    decimalData = messageData.copy() #make a copy of messagedata, output hex to dec
+
     #For reference of the way I first tried to decode the message by signal:
         #decimalData['data'] = messageData['data'].str[startIndex:endIndex].apply(lambda x: int(x,16))*scale+offset
-    
+
     if message != "not in DBC" and message.signals != []: #if the message is in the DBC
         messageData['Message'] = messageData['Message'].apply(lambda x: bytes.fromhex(x)) #transfrom the message's hexidecimal data into byte format
         #e.g. 0000000069118ec4 --> b'\x00\x00\x00\x00\x69\x11\x8e\xc4'
@@ -228,7 +228,7 @@ def convertData(messageNameID,attribute, df, db):
 
 def plotDBC(address, attributeNum, df, db):
     """Plot the data for a specific signal.
-    
+
     address: the str or int of the address of the signal.
     attributeNum: the str or int of the signal you want to plot."""
     style.use('seaborn-ticks')
@@ -243,17 +243,33 @@ def plotDBC(address, attributeNum, df, db):
                 attributeNum = getSignalName(address, attributeNum, db) #get signal name for the title, if needed
             if type(address) is int:
                 address = getMessageName(address, db) #get message name for title, if needed
-        decimalData.plot(x='Time', y='Message', title = "Message: " + str(address) + "\nSignal: " + str(attributeNum) )#plot the converted data
+        pt.rcParams["figure.figsize"] = (12,8)
+        params = {'legend.fontsize': 18,
+          'legend.handlelength': 2}
+        pt.rcParams.update(params)
+        pt.rcParams["font.family"] = "Times New Roman"
+        fig =pt.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax.set_axisbelow(True)
+        ax.minorticks_on()
+        ax.tick_params(axis="x", labelsize=18)
+        ax.tick_params(axis="y", labelsize=18)
+        ax.grid(which='major', linestyle='-', linewidth='0.5', color='skyblue')
+        ax.grid(which='minor', linestyle=':', linewidth='0.25', color='dimgray')
+        ax.set_xlabel('Time', fontsize=18)
+        ax.set_ylabel('Message', fontsize=18)
+        ax.set_title("Message: " + str(address) + "\nSignal: " + str(attributeNum),fontsize= 20)
+        decimalData.plot(x='Time', y='Message', ax = ax, color='firebrick', linewidth=1, grid=True, linestyle='-', marker ='.', markersize=2 )#plot the converted data
 
 def findObjectData(x):
     """For use in a lambda function to transform non-int converted data into something to plot.
-    
+
     Uses so far:
         Turn Signal - 1556
         LKAS_HUD - 1042
         Gears - 956
     """
-    
+
     if x == 'none' or x == 'standby' or x == 'P':
         return 0
     if x == 'left' or x == 'D':
