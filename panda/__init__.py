@@ -141,7 +141,9 @@ class Panda(object):
   HW_TYPE_BLACK_PANDA = '\x03'
   HW_TYPE_PEDAL = '\x04'
 
-  def __init__(self, serial=None, claim=True):
+  def __init__(self, serial=None, claim=True, ip="192.168.0.11", port=1337):
+    self.ip = ip
+    self.port = port
     self._serial = serial
     self._handle = None
     self.connect(claim)
@@ -155,7 +157,7 @@ class Panda(object):
       self.close()
 
     if self._serial == "WIFI":
-      self._handle = WifiHandle()
+      self._handle = WifiHandle(ip=self.ip, port =self.port)
       print("opening WIFI device")
       self.wifi = True
     else:
